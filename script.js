@@ -1,4 +1,4 @@
-//your JS code here. If required.
+//Tic tac toe
 document.getElementById("submit").addEventListener("click", startGame);
 
 let player1 = "", player2 = "";
@@ -69,3 +69,4 @@ function checkWinner() {
         const [a, b, c] = pattern;
         return board[a] && board[a] === board[b] && board[a] === board[c];
     });
+}
