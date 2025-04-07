@@ -1,14 +1,48 @@
 <!DOCTYPE html>
-
 <html>
-
 <head>
-	<link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .container {
+            display: flex;
+            justify-content: center;
+        }
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+            width: 300px;
+            margin: auto;
+            font-family: Arial, sans-serif;
+        }
+        .cell {
+            width: 100px;
+            height: 100px;
+            background: lightgray;
+            font-size: 36px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .cell:hover {
+            background: gray;
+        }
+        #startScreen {
+            display: flex;
+            flex-direction: column;
+            max-width: 200px;
+        }
+        #submit {
+            height: 40px;
+            margin-top: 10px;
+        }
+    </style>
 </head>
-
 <body>
-	<!-- the entire body must be written by student -->
-	<div class="container">
+    <div class="container">
         <div id="startScreen">
             <h1>Tic Tac Toe</h1>
             <label>Player 1:</label>
@@ -35,120 +69,79 @@
         </div>
     </div>
 
-    <script type="text/javascript" src="./script.js">
-</script>
-<script>
-	.container{
-	display:flex;
-	justify-content:center;
-}
-.board {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 5px;
-    width: 300px;
-    margin: auto;
-	font-family:Arial, sans-serif;
-}
+    <script src="./script.js"></script>
+    <script>
+        document.getElementById("submit").addEventListener("click", startGame);
 
-.cell {
-    width: 100px;
-    height: 100px;
-    background: lightgray;
-    font-size: 36px;
-    font-weight: bold;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    border-radius: 5px;
-	
-}
+        let player1 = "", player2 = "";
+        let currentPlayer = "";
+        let currentSymbol = "";
+        let board = ["", "", "", "", "", "", "", "", ""];
+        let gameActive = true;
 
-.cell:hover {
-    background: gray;
-}
-#startScreen{
-	display:flex;
-	flex-direction:column;
-	max-width:200px
-}
-#submit{
-	height:40px;
-	margin-top:10px
-}
-	document.getElementById("submit").addEventListener("click", startGame);
+        function startGame() {
+            player1 = document.getElementById("player1").value || "Player1";
+            player2 = document.getElementById("player2").value || "Player2";
 
-let player1 = "", player2 = "";
-let currentPlayer = "";
-let currentSymbol = "";
-let board = ["", "", "", "", "", "", "", "", ""];
-let gameActive = true;
+            document.getElementById("startScreen").style.display = "none";
+            document.getElementById("gameScreen").style.display = "block";
 
-function startGame() {
-    player1 = document.getElementById("player1").value || "Player1";
-    player2 = document.getElementById("player2").value || "Player2";
+            currentPlayer = player1;
+            currentSymbol = "x";
+            document.getElementById("message").innerText = `${currentPlayer}, you're up`;
 
-    document.getElementById("startScreen").style.display = "none";
-    document.getElementById("gameScreen").style.display = "block";
+            document.querySelectorAll(".cell").forEach(cell => {
+                cell.innerText = "";
+                cell.addEventListener("click", handleCellClick, { once: true });
+            });
 
-    currentPlayer = player1;
-    currentSymbol = "x";
-    document.getElementById("message").innerText = ${currentPlayer}, you're up;
+            board = ["", "", "", "", "", "", "", "", ""];
+            gameActive = true;
+        }
 
-    document.querySelectorAll(".cell").forEach(cell => {
-        cell.innerText = "";
-        cell.addEventListener("click", handleCellClick, { once: true });
-    });
+        function handleCellClick(event) {
+            if (!gameActive) return;
 
-    board = ["", "", "", "", "", "", "", "", ""];
-    gameActive = true;
-}
+            const cell = event.target;
+            const cellIndex = parseInt(cell.id) - 1;
 
-function handleCellClick(event) {
-    if (!gameActive) return;
+            if (board[cellIndex] !== "") return;
 
-    const cell = event.target;
-    const cellIndex = parseInt(cell.id) - 1;
+            board[cellIndex] = currentSymbol;
+            cell.innerText = currentSymbol;
 
-    if (board[cellIndex] !== "") return;
+            if (checkWinner()) {
+                document.getElementById("message").innerText = `${currentPlayer} congratulations you won!`;
+                gameActive = false;
+                return;
+            }
 
-    board[cellIndex] = currentSymbol;
-    cell.innerText = currentSymbol;
+            if (board.every(cell => cell !== "")) {
+                document.getElementById("message").innerText = "It's a draw!";
+                return;
+            }
 
-    if (checkWinner()) {
-        document.getElementById("message").innerText = `${currentPlayer} congratulations you won! `;
-        gameActive = false;
-        return;
-    }
+            switchPlayer();
+        }
 
-    if (board.every(cell => cell !== "")) {
-        document.getElementById("message").innerText = "It's a draw!";
-        return;
-    }
+        function switchPlayer() {
+            currentPlayer = currentPlayer === player1 ? player2 : player1;
+            currentSymbol = currentSymbol === "x" ? "o" : "x";
+            document.getElementById("message").innerText = `${currentPlayer}, you're up`;
+        }
 
-    switchPlayer();
-}
+        function checkWinner() {
+            const winPatterns = [
+                [0, 1, 2], [3, 4, 5], [6, 7, 8], 
+                [0, 3, 6], [1, 4, 7], [2, 5, 8], 
+                [0, 4, 8], [2, 4, 6]             
+            ];
 
-function switchPlayer() {
-    currentPlayer = currentPlayer === player1 ? player2 : player1;
-    currentSymbol = currentSymbol === "x" ? "o" : "x";
-    document.getElementById("message").innerText = ${currentPlayer}, you're up;
-}
-
-function checkWinner() {
-    const winPatterns = [
-        [0, 1, 2], [3, 4, 5], [6, 7, 8], 
-        [0, 3, 6], [1, 4, 7], [2, 5, 8], 
-        [0, 4, 8], [2, 4, 6]             
-    ];
-
-    return winPatterns.some(pattern => {
-        const [a, b, c] = pattern;
-        return board[a] && board[a] === board[b] && board[a] === board[c];
-    });
-}
-</script>
+            return winPatterns.some(pattern => {
+                const [a, b, c] = pattern;
+                return board[a] && board[a] === board[b] && board[a] === board[c];
+            });
+        }
+    </script>
 </body>
-
 </html>
